@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.animatedOpacity {
+  transition: 2.5s;
+  opacity: 0;
+}
+
+.animatedElementUp {
+  transition: 0.8s;
+  opacity: 0;
+  transform: translateY(-300px);
+}
+
+.animatedElmentBottom {
+  transition: 0.5s;
+  opacity: 0;
+  transform: translateY(300px);
+}
+
+.animatedElementRight {
+  transition: 0.6s;
+  transform: translate(300px);
+  opacity: 0;
+}
+
+.animatedElementLeft {
+  transition: 0.6s;
+  transform: translate(-300px);
+  opacity: 0;
+}
+
+.bgRegister {
+  /* background-image: url("../assets/bgResgister.jpg"); */
+  height: 420px;
+  width: 100%;
+  background-size: cover;
+  background-position: 30% 50%;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(#a8a8a84d, #f1f1f15e), url("../assets/bgResgister.jpg");
+}

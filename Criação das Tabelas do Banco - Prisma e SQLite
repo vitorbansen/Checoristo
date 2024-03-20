@@ -1,0 +1,76 @@
+#Banco de Dados em Node com Prisma Escrevendo em Formado SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  idUsuarios       String            @id @default(uuid())
+  name             String
+  email            String            @unique
+  senha            String
+  criadoEm         DateTime          @default(now())
+  alteradoEm       DateTime          @updatedAt
+  ListasCompras    ListasCompras[]
+  historicoCompras HistoricoCompra[]
+
+  @@map("users")
+}
+
+model ListasCompras {
+  idLista     Int         @id @default(autoincrement())
+  idUsuario   String
+  tituloLista String
+  dataCriacao DateTime    @default(now())
+  usuario     User        @relation(fields: [idUsuario], references: [idUsuarios])
+  ItemLista   ItemLista[]
+
+  @@unique([idLista, idUsuario], name: "PK_ListasCompras")
+  @@index([idUsuario], name: "IDX_ListasCompras_idUsuario")
+  @@map("ListasCompras")
+}
+
+model Categorias {
+  idCategoria   Int         @id @default(autoincrement())
+  nomeCategoria String
+  ItemLista     ItemLista[]
+
+  @@map("Categorias")
+}
+
+model ItemLista {
+  idItem           Int               @id @default(autoincrement())
+  idLista          Int
+  nomeItem         String
+  quantidade       Int?
+  descricao        String
+  comprado         Boolean           @default(false)
+  idCategoria      Int
+  historicoCompras HistoricoCompra[]
+
+  lista     ListasCompras @relation(fields: [idLista], references: [idLista])
+  categoria Categorias    @relation(fields: [idCategoria], references: [idCategoria])
+
+  @@unique([idItem, idLista], name: "PK_ItensLista")
+  @@index([idLista], name: "IDX_ItensLista_idLista")
+  @@index([idCategoria], name: "IDX_ItensLista_idCategoria")
+  @@map("ItensLista")
+}
+
+model HistoricoCompra {
+  idCompra   Int       @id @default(autoincrement())
+  idUsuario  String
+  idItem     Int
+  dataCompra DateTime  @default(now())
+  usuario    User      @relation(fields: [idUsuario], references: [idUsuarios])
+  itemLista  ItemLista @relation(fields: [idItem], references: [idItem])
+
+  @@index([idUsuario], name: "IDX_HistoricoCompras_idUsuario")
+  @@index([idItem], name: "IDX_HistoricoCompras_idItem")
+  @@map("HistoricoCompras")
+}
