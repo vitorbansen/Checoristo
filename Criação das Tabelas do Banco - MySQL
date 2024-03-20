@@ -1,0 +1,47 @@
+<h1> Banco de Dados Escrito em MySQL </h1>
+
+- Criação da tabela de Usuários
+CREATE TABLE Usuarios (
+    idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(100) NOT NULL
+);
+
+- Criação da tabela de Listas de Compras
+CREATE TABLE ListasCompras (
+    idLista INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT,
+    tituloLista VARCHAR(100) NOT NULL,
+    dataCriacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario)
+);
+
+- Criação da tabela de Categorias
+CREATE TABLE Categorias (
+    idCategoria INT AUTO_INCREMENT PRIMARY KEY,
+    nomeCategoria VARCHAR(50) NOT NULL
+);
+
+- Criação da tabela de Itens da Lista
+CREATE TABLE ItensLista (
+    idItem INT AUTO_INCREMENT PRIMARY KEY,
+    idLista INT,
+    nomeItem VARCHAR(100) NOT NULL,
+    quantidade INT,
+    descricao TEXT,
+    comprado BOOLEAN DEFAULT FALSE,
+    idCategoria INT,
+    FOREIGN KEY (idLista) REFERENCES ListasCompras(idLista),
+    FOREIGN KEY (idCategoria) REFERENCES Categorias(idCategoria)
+);
+
+- Criação da tabela de Histórico de Compras
+CREATE TABLE HistoricoCompras (
+    idCompra INT AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT,
+    idItem INT,
+    dataCompra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idUsuario) REFERENCES Usuarios(idUsuario),
+    FOREIGN KEY (idItem) REFERENCES ItensLista(idItem)
+);
