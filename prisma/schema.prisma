@@ -15,8 +15,8 @@ model User {
   name             String
   email            String            @unique
   senha            String
-  criadoEm         DateTime          @default(now())
-  alteradoEm       DateTime          @updatedAt
+  criadoEm         DateTime         @default(now())
+  alteradoEm       DateTime?         @updatedAt
   ListasCompras    ListasCompras[]
   historicoCompras HistoricoCompra[]
 

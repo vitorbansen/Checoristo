@@ -1,7 +1,3 @@
-import { Prisma } from "@prisma/client";
-import { PrismaClient } from "@prisma/client/extension";
+import { PrismaClient } from '@prisma/client'
 
-// vai ver automatico as conexoes que precisa
-export const prisma = new PrismaClient({
-    log:['query']
-}) 
+export const prisma = new PrismaClient()
