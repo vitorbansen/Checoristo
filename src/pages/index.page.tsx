@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import ClaimUsernameForm from "./register/register";
+import ClaimUsernameForm from "./register/register.page";
 
 
 const inter = Inter({ subsets: ["latin"] });

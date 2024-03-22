@@ -18,7 +18,7 @@ model User {
   criadoEm         DateTime         @default(now())
   alteradoEm       DateTime?         @updatedAt
   ListasCompras    ListasCompras[]
-  historicoCompras HistoricoCompra[]
+  // historicoCompras HistoricoCompra[]
 
   @@map("users")
 }
@@ -52,7 +52,7 @@ model ItemLista {
   descricao        String
   comprado         Boolean           @default(false)
   idCategoria      Int
-  historicoCompras HistoricoCompra[]
+  // historicoCompras HistoricoCompra[]
 
   lista     ListasCompras @relation(fields: [idLista], references: [idLista])
   categoria Categorias    @relation(fields: [idCategoria], references: [idCategoria])
@@ -63,15 +63,15 @@ model ItemLista {
   @@map("ItensLista")
 }
 
-model HistoricoCompra {
-  idCompra   Int       @id @default(autoincrement())
-  idUsuario  String
-  idItem     Int
-  dataCompra DateTime  @default(now())
-  usuario    User      @relation(fields: [idUsuario], references: [idUsuarios])
-  itemLista  ItemLista @relation(fields: [idItem], references: [idItem])
+// model HistoricoCompra {
+//   idCompra   Int       @id @default(autoincrement())
+//   idUsuario  String
+//   idItem     Int
+//   dataCompra DateTime  @default(now())
+//   usuario    User      @relation(fields: [idUsuario], references: [idUsuarios])
+//   itemLista  ItemLista @relation(fields: [idItem], references: [idItem])
 
-  @@index([idUsuario], name: "IDX_HistoricoCompras_idUsuario")
-  @@index([idItem], name: "IDX_HistoricoCompras_idItem")
-  @@map("HistoricoCompras")
-}
+//   @@index([idUsuario], name: "IDX_HistoricoCompras_idUsuario")
+//   @@index([idItem], name: "IDX_HistoricoCompras_idItem")
+//   @@map("HistoricoCompras")
+// }

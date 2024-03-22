@@ -39,7 +39,6 @@ export default function ClaimUsernameForm() {
             })
         } catch (err) {
             console.log(err)
-            console.log('aqui')
         }
 
     }
