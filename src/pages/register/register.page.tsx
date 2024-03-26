@@ -12,7 +12,8 @@ import { api } from "@/lib/axios";
 const claimUsernameFormSchema = z.object({
     email: z.string().min(3)  //min(3)- Minimo de caracteres 
         .regex(/^([a-z\@\-]+)$/i), // Quais Caravteres vou permitir preencher
-    senha: z.string()
+    senha: z.string(),
+    name: z.string().min(3) 
 })
 
 // Convertendo estrutura do Zod para uma estrutura do typeScript inferir tipos de dados no form
@@ -29,11 +30,12 @@ export default function ClaimUsernameForm() {
         e.preventDefault()
         const email = watch('email') // watch oberva as mudanças e atualiza quando tiver essa mudança de acordo que eu envio o formulario
         const senha = watch('senha')
+        const name = watch('name')
         try {
             await api.post('/api/users', {
                 email: email,
                 senha: senha,
-                name: "teste",
+                name: name,
             }, {
                
             })
@@ -52,12 +54,17 @@ export default function ClaimUsernameForm() {
                     </Box>
                     <Box className="flex flex-col justify-center items-center w-full bg-neutral-50  " >
                         <Box width={360} className="text-xl text-center text-defaultBlue font-bold ">Prepare-se para uma experiência de compras intuitiva e eficiente. Bem-vindo ao nosso aplicativo de lista de compras</Box>
-                        <FormControl as="form" className="mt-10 flex flex-col justify-center items-center">
+                        <FormControl as="form" className=" flex flex-col justify-center items-center">
+                            <FormLabel className=" mt-1 text-defaultBlue">Nome</FormLabel>
+                            <Input width={400} bg={"lightgrey"} className="rounded-sm " type='text' boxShadow='outline' rounded='md' {...register('name')} />
+
                             <FormLabel className=" text-defaultBlue ">Email</FormLabel>
                             <Input width={400} bg={"lightgrey"} className="rounded-sm " type='email' boxShadow='outline' rounded='md' {...register('email')} />
-                            <FormLabel className=" mt-2 text-defaultBlue">Senha</FormLabel>
+
+                            <FormLabel className=" mt-1 text-defaultBlue">Senha</FormLabel>
                             <Input width={400} bg={"lightgrey"} className="rounded-sm " type='password' boxShadow='outline' rounded='md' {...register('senha')} />
-                            <Button className="mt-6" colorScheme='blue' type="submit" onClick={(e) => handleSubmit(e)}>Entrar</Button>
+
+                            <Button className="mt-6" colorScheme='blue' type="submit" onClick={(e) => handleSubmit(e)}>Cadastrar</Button>
                         </FormControl>
                     </Box>
                 </Box>
