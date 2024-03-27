@@ -1,105 +1,129 @@
-import { Box, Button, Input, VStack, HStack, Text } from "@chakra-ui/react";
-import { FormControl, FormLabel } from '@chakra-ui/react'
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Box, Button, Input } from "@chakra-ui/react";
+import { FormControl, FormLabel } from '@chakra-ui/react'
 import { api } from "@/lib/axios";
 
-// Define a estrutura dos campos do formulário
-const userFormSchema = z.object({
-    idUsuarios: z.string().optional(),
-    email: z.string().min(3).regex(/^([a-z\@\-]+)$/i),
-    senha: z.string(),
-    name: z.string().min(3)
-})
-
-// Convertendo a estrutura do Zod para uma estrutura que o TypeScript possa inferir os tipos de dados no formulário
-type UserFormData = z.infer<typeof userFormSchema>
+interface User {
+    idUsuarios: string;
+    name: string;
+    email: string;
+    senha: string;
+}
 
 export default function UserManagement() {
-    const [users, setUsers] = useState<UserFormData[]>([]);
-    const [editingUserId, setEditingUserId] = useState<string | null>(null);
-    const { register, handleSubmit, reset } = useForm<UserFormData>({
-        resolver: zodResolver(userFormSchema)
-    });
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [editingUserId, setEditingUserId] = useState<string | null>(null); // State to track which user is being edited
+    const {
+        register,
+        handleSubmit,
+        reset,
+    } = useForm<User>();
 
-    // Função para carregar os usuários ao iniciar o componente
     useEffect(() => {
         fetchUsers();
     }, []);
 
-    // Função para carregar os usuários da API
-    const fetchUsers = async () => {
+    async function fetchUsers() {
         try {
-            const response = await api.get('/api/users');
+            const response = await api.get<User[]>('/api/users');
             setUsers(response.data);
+            setLoading(false);
         } catch (error) {
             console.error("Error fetching users:", error);
         }
-    };
+    }
 
-    // Função para lidar com a submissão do formulário
-    const onSubmit = async (data: UserFormData) => {
+    async function handleDelete(idUsuarios: string) {
         try {
-            if (editingUserId) {
-                await api.put(`/api/users/${editingUserId}`, data);
-            } else {
-                await api.post('/api/users', data);
-            }
-            fetchUsers(); // Recarregar a lista de usuários após a edição ou criação
-            reset(); // Limpar o formulário após a submissão
-            setEditingUserId(null); // Limpar o ID de edição
-        } catch (error) {
-            console.error("Error submitting form:", error);
-        }
-    };
-
-    // Função para lidar com a exclusão de um usuário
-    const deleteUser = async (userId: string) => {
-        try {
-            await api.delete(`/api/users/${userId}`);
-            fetchUsers(); // Recarregar a lista de usuários após a exclusão
+            await api.delete(`/api/users?idUsuarios=${idUsuarios}`);
+            setUsers(users.filter(user => user.idUsuarios !== idUsuarios));
         } catch (error) {
             console.error("Error deleting user:", error);
         }
-    };
+    }
 
-    // Função para preencher o formulário com os dados do usuário selecionado para edição
-    const editUser = (user: UserFormData) => {
-        setEditingUserId(user.idUsuarios || null);
-        reset(user);
-    };
+    async function onSubmit(data: User) {
+        try {
+            if (editingUserId) {
+                await api.put(`/api/users?idUsuarios=${editingUserId}`, data); // Send PUT request for editing user
+                const updatedUsers = users.map(user =>
+                    user.idUsuarios === editingUserId ? { ...user, ...data } : user
+                );
+                setUsers(updatedUsers);
+                setEditingUserId(null); // Reset editing state
+            } else {
+                const response = await api.post<User>('/api/users', data);
+                setUsers([...users, response.data]);
+            }
+            reset(); // Reset the form after submission
+        } catch (err) {
+            console.error("Error submitting user:", err);
+        }
+    }
+
+    function startEditingUser(idUsuarios: string) {
+        setEditingUserId(idUsuarios);
+        const userToEdit = users.find(user => user.idUsuarios === idUsuarios);
+        if (userToEdit) {
+            reset(userToEdit); // Populate form fields with user data
+        }
+    }
+
+    async function handleRefresh() {
+        setLoading(true); // Set loading state to true while fetching users
+        await fetchUsers(); // Fetch users from the API
+    }
 
     return (
-        <Box p={4}>
-            <Box mb={4}>
-                <FormControl as="form" onSubmit={handleSubmit(onSubmit)}>
-                    <VStack spacing={4} align="stretch">
-                        <FormLabel>Email</FormLabel>
-                        <Input {...register('email')} />
+        <Box className="max-h-full bg-neutral-500">
+            <Box className="flex items-center justify-center py-52">
+                <Box width={800} className="flex flex-row  ">
+                    <Box className="flex flex-col justify-center items-center w-full bg-neutral-50 rounded-3xl ">
+                        <Button className="mb-4 mt-5" colorScheme='blue' onClick={handleRefresh}>Atualizar</Button> {/* Botão de atualização */}
+                        {loading ? <p>Carregando...</p> : renderUsers()}
+                        <FormControl as="form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-center items-center pb-10">
+                            <FormLabel className="mt-1 text-defaultBlue">Nome</FormLabel>
+                            <Input placeholder="Nome" width={400} bg={"lightgrey"} className="rounded-sm " type='text' boxShadow='outline' rounded='md' {...register('name')} />
 
-                        <FormLabel>Senha</FormLabel>
-                        <Input type="password" {...register('senha')} />
+                            <FormLabel className="text-defaultBlue">Email</FormLabel>
+                            <Input placeholder="Email" width={400} bg={"lightgrey"} className="rounded-sm " type='email' boxShadow='outline' rounded='md' {...register('email')} />
 
-                        <FormLabel>Nome</FormLabel>
-                        <Input {...register('name')} />
+                            <FormLabel className="mt-1 text-defaultBlue">Senha</FormLabel>
+                            <Input placeholder="Senha" width={400} bg={"lightgrey"} className="rounded-sm " type='password' boxShadow='outline' rounded='md' {...register('senha')} />
 
-                        <Button type="submit">Salvar</Button>
-                    </VStack>
-                </FormControl>
-            </Box>
-
-            <Box>
-                {users.map(user => (
-                    <HStack key={user.idUsuarios || undefined} p={2} borderWidth="1px" borderRadius="md">
-                        <Text>{user.name}</Text>
-                        <Text>{user.email}</Text>
-                        <Button onClick={() => editUser(user)}>Editar</Button>
-                        <Button onClick={() => deleteUser(user.idUsuarios || '')}>Excluir</Button>
-                    </HStack>
-                ))}
+                            <Button className="mt-6" colorScheme='green' type="submit" >{editingUserId ? 'Salvar' : 'Cadastrar'}</Button>
+                        </FormControl>
+                    </Box>
+                </Box>
             </Box>
         </Box>
     );
+
+    function renderUsers() {
+        return (
+            <table className="w-full border-collapse">
+                <thead>
+                    <tr>
+                        <th className="bg-gray-200 border border-gray-300 px-4 py-2">Email</th>
+                        <th className="bg-gray-200 border border-gray-300 px-4 py-2">Nome</th>
+                        <th className="bg-gray-200 border border-gray-300 px-4 py-2">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map(user => (
+                        <tr key={user.idUsuarios}>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{user.email}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{user.name}</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">
+                                <Button size='sm' className="px-2 mr-3" colorScheme='yellow' onClick={() => startEditingUser(user.idUsuarios)}>Edit</Button>
+                                <Button size='sm' className="px-2" colorScheme='red' onClick={() => handleDelete(user.idUsuarios)}>Delete</Button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    }
 }
