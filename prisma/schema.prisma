@@ -46,7 +46,7 @@ model Categorias {
 
 model ItemLista {
   idItem           Int               @id @default(autoincrement())
-  idLista          Int
+  idLista          Int                 
   nomeItem         String
   quantidade       Int?
   descricao        String
