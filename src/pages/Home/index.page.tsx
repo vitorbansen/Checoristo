@@ -56,13 +56,14 @@ export default function Home() {
 
     async function createItem() {
         try {
+            console.log(formData)
             setLoading(true);
             let categoriaId = formData.idCategoria; // Salva o ID da categoria selecionada
             if (formData.idCategoria === "novaCategoria") { // Se "novaCategoria" for selecionada, cria uma nova categoria
                 const novaCategoriaResponse = await axios.post<Categoria>("/api/categorias", { nomeCategoria: formData.nomeCategoria });
                 categoriaId = novaCategoriaResponse.data.idCategoria; // Atualiza o ID da categoria com a nova categoria criada
             }
-            const response = await axios.post<Item>("/api/items", { ...formData, idCategoria: categoriaId });
+            const response = await axios.post<Item>("/api/items", { ...formData, quantidade: Number(formData.quantidade) });
             setItems(prevItems => [...prevItems, response.data]);
             setFormData({}); // Limpa o formulário após a criação do item
         } catch (error) {
@@ -84,19 +85,21 @@ export default function Home() {
     };
 
     return (
-        <div className="w-max-[1100px] w-full border-2 border-red-600 h-auto mb-20 mt-20 flex flex-col justify-center items-center">
+        <div className="w-max-[1100px] w-full h-auto mb-20 mt-20 flex flex-col justify-center items-center">
             <form onSubmit={(e) => { e.preventDefault(); createItem(); }} className="bg-neutral-50 rounded-3xl p-5 mt-5 ">
                 <Input placeholder="Nome do Item" width={400} mb={2} name="nomeItem" value={formData.nomeItem || ""} onChange={handleChange} required />
                 <Input placeholder="Quantidade" width={400} mb={2} name="quantidade" value={formData.quantidade || ""} onChange={handleChange} required />
                 <Input placeholder="Descrição" width={400} mb={2} name="descricao" value={formData.descricao || ""} onChange={handleChange} />
                 <Checkbox name="comprado" checked={formData.comprado || false} onChange={handleChange}>Comprado</Checkbox>
-                <Select placeholder="Selecione uma categoria" width={400} mb={2} name="idCategoria" value={formData.idCategoria || ""} onChange={handleChange}>
-                    {/* <option value="">Selecione uma categoria</option> */}
+
+                {/* <Select placeholder="Selecione uma categoria" width={400} mb={2} name="idCategoria" value={formData.idCategoria || ""} onChange={handleChange}>
+                    
                     {categorias.map(categoria => (
                         <option key={categoria.idCategoria} value={categoria.idCategoria}>{categoria.nomeCategoria}</option>
                     ))}
-                    <option value="novaCategoria">+ Nova Categoria</option> {/* Opção para criar nova categoria */}
-                </Select>
+                    <option value="novaCategoria">+ Nova Categoria</option> 
+                </Select> */}
+
                 {formData.idCategoria === "novaCategoria" && ( // Mostra o campo para inserir o nome da nova categoria
                     <Input placeholder="Nome da Nova Categoria" width={400} mb={2} name="nomeCategoria" value={formData.nomeCategoria || ""} onChange={handleChange} required />
                 )}
@@ -111,7 +114,7 @@ export default function Home() {
                     <Box className="py-7 px-10">Comprado</Box>
                 </Box>
                 {items.map(item => (
-                    <Box key={item.idItem} className="bg-gray-100 border border-gray-200 rounded-lg max-w-full flex flex-row justify-between items-center px-5 text-lg font-medium text-gray-800 mt-3" width={1200}>
+                    <Box key={item.idItem} className="bg-gray-100 border-gray-200 rounded-lg max-w-full flex flex-row justify-between items-center px-5 text-lg font-medium text-gray-800 mt-3 shadow-lg border" width={1200}>
                         <Box className="py-4 px-10">{item.nomeItem}</Box>
                         <Box className="py-4 px-10">{item.quantidade}</Box>
                         <Box className="py-4 px-10">{item.descricao}</Box>

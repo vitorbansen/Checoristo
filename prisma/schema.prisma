@@ -29,7 +29,7 @@ model ListasCompras {
   tituloLista String
   dataCriacao DateTime    @default(now())
   usuario     User        @relation(fields: [idUsuario], references: [idUsuarios])
-  ItemLista   ItemLista[]
+  // ItemLista   ItemLista[]
 
   @@unique([idLista, idUsuario], name: "PK_ListasCompras")
   @@index([idUsuario], name: "IDX_ListasCompras_idUsuario")
@@ -39,23 +39,23 @@ model ListasCompras {
 model Categorias {
   idCategoria   Int         @id @default(autoincrement())
   nomeCategoria String
-  ItemLista     ItemLista[]
+  // ItemLista     ItemLista[]
 
   @@map("Categorias")
 }
 
 model ItemLista {
   idItem           Int               @id @default(autoincrement())
-  idLista          Int                 
+  idLista          Int?                 
   nomeItem         String
   quantidade       Int?
   descricao        String
   comprado         Boolean           @default(false)
-  idCategoria      Int
+  idCategoria      Int?
   // historicoCompras HistoricoCompra[]
 
-  lista     ListasCompras @relation(fields: [idLista], references: [idLista])
-  categoria Categorias    @relation(fields: [idCategoria], references: [idCategoria])
+  // lista     ListasCompras @relation(fields: [idLista], references: [idLista])
+  // categoria Categorias    @relation(fields: [idCategoria], references: [idCategoria])
 
   @@unique([idItem, idLista], name: "PK_ItensLista")
   @@index([idLista], name: "IDX_ItensLista_idLista")
