@@ -53,6 +53,7 @@ export default function Home() {
             console.error("Error fetching categories:", error);
         }
     }
+    
 
     async function createItem() {
         try {
