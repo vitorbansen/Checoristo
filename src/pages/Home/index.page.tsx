@@ -1,4 +1,4 @@
-import { Box, Button, Input, Checkbox, Select } from "@chakra-ui/react";
+import { Box, Button, Input, Checkbox, Select, FormControl, FormLabel, VStack, HStack } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useState } from "react";
 import axios from "axios";
 
@@ -53,20 +53,19 @@ export default function Home() {
             console.error("Error fetching categories:", error);
         }
     }
-    
 
     async function createItem() {
         try {
-            console.log(formData)
+            console.log(formData);
             setLoading(true);
-            let categoriaId = formData.idCategoria; // Salva o ID da categoria selecionada
-            if (formData.idCategoria === "novaCategoria") { // Se "novaCategoria" for selecionada, cria uma nova categoria
+            let categoriaId = formData.idCategoria;
+            if (formData.idCategoria === "novaCategoria") {
                 const novaCategoriaResponse = await axios.post<Categoria>("/api/categorias", { nomeCategoria: formData.nomeCategoria });
-                categoriaId = novaCategoriaResponse.data.idCategoria; // Atualiza o ID da categoria com a nova categoria criada
+                categoriaId = novaCategoriaResponse.data.idCategoria;
             }
-            const response = await axios.post<Item>("/api/items", { ...formData, quantidade: Number(formData.quantidade) });
+            const response = await axios.post<Item>("/api/items", { ...formData, quantidade: Number(formData.quantidade), idCategoria: categoriaId });
             setItems(prevItems => [...prevItems, response.data]);
-            setFormData({}); // Limpa o formulário após a criação do item
+            setFormData({});
         } catch (error) {
             console.error("Error creating item:", error);
         } finally {
@@ -86,43 +85,59 @@ export default function Home() {
     };
 
     return (
-        <div className="w-max-[1100px] w-full h-auto mb-20 mt-20 flex flex-col justify-center items-center">
-            <form onSubmit={(e) => { e.preventDefault(); createItem(); }} className="bg-neutral-50 rounded-3xl p-5 mt-5 ">
-                <Input placeholder="Nome do Item" width={400} mb={2} name="nomeItem" value={formData.nomeItem || ""} onChange={handleChange} required />
-                <Input placeholder="Quantidade" width={400} mb={2} name="quantidade" value={formData.quantidade || ""} onChange={handleChange} required />
-                <Input placeholder="Descrição" width={400} mb={2} name="descricao" value={formData.descricao || ""} onChange={handleChange} />
-                <Checkbox name="comprado" checked={formData.comprado || false} onChange={handleChange}>Comprado</Checkbox>
-
-                {/* <Select placeholder="Selecione uma categoria" width={400} mb={2} name="idCategoria" value={formData.idCategoria || ""} onChange={handleChange}>
-                    
-                    {categorias.map(categoria => (
-                        <option key={categoria.idCategoria} value={categoria.idCategoria}>{categoria.nomeCategoria}</option>
-                    ))}
-                    <option value="novaCategoria">+ Nova Categoria</option> 
-                </Select> */}
-
-                {formData.idCategoria === "novaCategoria" && ( // Mostra o campo para inserir o nome da nova categoria
-                    <Input placeholder="Nome da Nova Categoria" width={400} mb={2} name="nomeCategoria" value={formData.nomeCategoria || ""} onChange={handleChange} required />
-                )}
-                <Button colorScheme='green' type="submit" isLoading={loading}>Adicionar Item</Button>
+        <Box maxW="1600px" w="full" h="auto" mb="20" mt="20" mx="auto" display="flex" flexDirection="column" alignItems="center">
+            <form onSubmit={(e) => { e.preventDefault(); createItem(); }} className="bg-neutral-50 rounded-3xl p-5 mt-5" style={{ width: "100%" }}>
+                <HStack spacing={4} wrap="wrap" justifyContent="center">
+                    <FormControl>
+                        <FormLabel>Nome do Item</FormLabel>
+                        <Input placeholder="Nome do Item" name="nomeItem" value={formData.nomeItem || ""} onChange={handleChange} required />
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>Quantidade</FormLabel>
+                        <Input placeholder="Quantidade" name="quantidade" value={formData.quantidade || ""} onChange={handleChange} required />
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>Descrição</FormLabel>
+                        <Input placeholder="Descrição" name="descricao" value={formData.descricao || ""} onChange={handleChange} />
+                    </FormControl>
+                    <FormControl>
+                        <Checkbox name="comprado" isChecked={formData.comprado || false} onChange={handleChange}>Comprado</Checkbox>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>Categoria</FormLabel>
+                        <Select placeholder="Selecione uma categoria" name="idCategoria" value={formData.idCategoria || ""} onChange={handleChange}>
+                            {categorias.map(categoria => (
+                                <option key={categoria.idCategoria} value={categoria.idCategoria}>{categoria.nomeCategoria}</option>
+                            ))}
+                            <option value="novaCategoria">+ Nova Categoria</option>
+                        </Select>
+                    </FormControl>
+                    {formData.idCategoria === "novaCategoria" && (
+                        <FormControl>
+                            <FormLabel>Nome da Nova Categoria</FormLabel>
+                            <Input placeholder="Nome da Nova Categoria" name="nomeCategoria" value={formData.nomeCategoria || ""} onChange={handleChange} required />
+                        </FormControl>
+                    )}
+                </HStack>
+                <Button colorScheme='green' type="submit" isLoading={loading} mt={4}>Adicionar Item</Button>
             </form>
 
-            <Box className="bg-white h-auto flex flex-col justify-center items-center mt-30">
-                <Box className="bg-slate-500 h-[10rem] rounded-2xl max-w-full flex flex-row justify-between items-center px-5 text-4xl font-bold text-white mt-40" width={1200}>
-                    <Box className="py-7 px-10">Nome</Box>
-                    <Box className="py-7 px-10">Quantidade</Box>
-                    <Box className="py-7 px-10">Descrição</Box>
-                    <Box className="py-7 px-10">Comprado</Box>
-                </Box>
+            <Box bg="white" h="auto" display="flex" flexDirection="column" alignItems="center" mt="10" w="full">
+                <HStack bg="gray.600" h="4rem" rounded="lg" w="full" maxW="1600px" justifyContent="space-between" px="5" textColor="white" fontSize="xl" fontWeight="bold">
+                    <Box py="2" px="4">Nome</Box>
+                    <Box py="2" px="4">Quantidade</Box>
+                    <Box py="2" px="4">Descrição</Box>
+                    <Box py="2" px="4">Comprado</Box>
+                </HStack>
                 {items.map(item => (
-                    <Box key={item.idItem} className="bg-gray-100 border-gray-200 rounded-lg max-w-full flex flex-row justify-between items-center px-5 text-lg font-medium text-gray-800 mt-3 shadow-lg border" width={1200}>
-                        <Box className="py-4 px-10">{item.nomeItem}</Box>
-                        <Box className="py-4 px-10">{item.quantidade}</Box>
-                        <Box className="py-4 px-10">{item.descricao}</Box>
-                        <Box className="py-4 px-10">{item.comprado ? "Sim" : "Não"}</Box>
-                    </Box>
+                    <HStack key={item.idItem} bg="gray.100" border="1px" borderColor="gray.200" rounded="lg" w="full" maxW="1200px" justifyContent="space-between" px="5" mt="3" boxShadow="lg">
+                        <Box py="2" px="4">{item.nomeItem}</Box>
+                        <Box py="2" px="4">{item.quantidade}</Box>
+                        <Box py="2" px="4">{item.descricao}</Box>
+                        <Box py="2" px="4">{item.comprado ? "Sim" : "Não"}</Box>
+                    </HStack>
                 ))}
             </Box>
-        </div>
+        </Box>
     );
 }
