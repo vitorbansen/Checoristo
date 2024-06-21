@@ -77,53 +77,91 @@ export default function UserManagement() {
     }
 
     return (
-        <Box className="max-h-full bg-neutral-500">
-            <Box className="flex items-center justify-center py-52">
-                <Box width={800} className="flex flex-row  ">
-                    <Box className="flex flex-col justify-center items-center w-full bg-neutral-50 rounded-3xl ">
-                        <Button className="mb-4 mt-5" colorScheme='blue' onClick={handleRefresh}>Atualizar</Button> {/* Botão de atualização */}
-                        {loading ? <p>Carregando...</p> : renderUsers()}
-                        <FormControl as="form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-center items-center pb-10">
-                            <FormLabel className="mt-1 text-defaultBlue">Nome</FormLabel>
-                            <Input placeholder="Nome" width={400} bg={"lightgrey"} className="rounded-sm " type='text' boxShadow='outline' rounded='md' {...register('name')} />
+        <Box className="min-h-screen flex items-center justify-center bg-neutral-500 p-4">
+        <Box
+        className="flex flex-col items-center bg-neutral-50 p-8 rounded-xl shadow-2xl"
+        maxWidth="800px"
+        width="100%"
+        >
+        <Button className="mb-4" colorScheme="blue" onClick={handleRefresh}>
+          Atualizar
+        </Button>
+        {loading ? <p>Carregando...</p> : renderUsers()}
 
-                            <FormLabel className="text-defaultBlue">Email</FormLabel>
-                            <Input placeholder="Email" width={400} bg={"lightgrey"} className="rounded-sm " type='email' boxShadow='outline' rounded='md' {...register('email')} />
+        <FormControl as="form" onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col items-center">
+          <FormLabel className="mt-1 text-defaultBlue">Nome</FormLabel>
+          <Input
+            placeholder="Nome"
+            width="100%"
+            bg="lightgrey"
+            className="rounded-sm mb-4"
+            type="text"
+            boxShadow="outline"
+            rounded="md"
+            {...register('name')}
+          />
 
-                            <FormLabel className="mt-1 text-defaultBlue">Senha</FormLabel>
-                            <Input placeholder="Senha" width={400} bg={"lightgrey"} className="rounded-sm " type='password' boxShadow='outline' rounded='md' {...register('senha')} />
+          <FormLabel className="text-defaultBlue">Email</FormLabel>
+          <Input
+            placeholder="Email"
+            width="100%"
+            bg="lightgrey"
+            className="rounded-sm mb-4"
+            type="email"
+            boxShadow="outline"
+            rounded="md"
+            {...register('email')}
+          />
 
-                            <Button className="mt-6" colorScheme='green' type="submit" >{editingUserId ? 'Salvar' : 'Cadastrar'}</Button>
-                        </FormControl>
-                    </Box>
-                </Box>
-            </Box>
-        </Box>
+          <FormLabel className="mt-1 text-defaultBlue">Senha</FormLabel>
+          <Input
+            placeholder="Senha"
+            width="100%"
+            bg="lightgrey"
+            className="rounded-sm mb-4"
+            type="password"
+            boxShadow="outline"
+            rounded="md"
+            {...register('senha')}
+          />
+
+          <Button className="mt-6" colorScheme="green" type="submit">
+            {editingUserId ? 'Salvar' : 'Cadastrar'}
+          </Button>
+        </FormControl>
+      </Box>
+    </Box>
+  );
+
+  function renderUsers() {
+    return (
+      <Box overflowX="auto" className="w-full mt-4">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="bg-gray-200 border border-gray-300 px-4 py-2">Email</th>
+              <th className="bg-gray-200 border border-gray-300 px-4 py-2">Nome</th>
+              <th className="bg-gray-200 border border-gray-300 px-4 py-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.idUsuarios}>
+                <td className="border border-gray-300 px-4 py-2 text-center">{user.email}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{user.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  <Button size="sm" className="px-2 mr-3" colorScheme="yellow" onClick={() => startEditingUser(user.idUsuarios)}>
+                    Edit
+                  </Button>
+                  <Button size="sm" className="px-2" colorScheme="red" onClick={() => handleDelete(user.idUsuarios)}>
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Box>
     );
-
-    function renderUsers() {
-        return (
-            <table className="w-full border-collapse">
-                <thead>
-                    <tr>
-                        <th className="bg-gray-200 border border-gray-300 px-4 py-2">Email</th>
-                        <th className="bg-gray-200 border border-gray-300 px-4 py-2">Nome</th>
-                        <th className="bg-gray-200 border border-gray-300 px-4 py-2">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map(user => (
-                        <tr key={user.idUsuarios}>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{user.email}</td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{user.name}</td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">
-                                <Button size='sm' className="px-2 mr-3" colorScheme='yellow' onClick={() => startEditingUser(user.idUsuarios)}>Edit</Button>
-                                <Button size='sm' className="px-2" colorScheme='red' onClick={() => handleDelete(user.idUsuarios)}>Delete</Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        );
-    }
+  }
 }
