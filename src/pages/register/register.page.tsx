@@ -11,7 +11,7 @@ import { api } from "@/lib/axios";
 //Define a estrutura dos campos do Formulario
 const claimUsernameFormSchema = z.object({
     email: z.string().min(3)  //min(3)- Minimo de caracteres 
-        .regex(/^([a-z\@\-]+)$/i), // Quais Caravteres vou permitir preencher
+        .regex(/^([a-z\@\-]+)$/i), // Quais Caracteres vou permitir preencher
     senha: z.string(),
     name: z.string().min(3) 
 })
@@ -46,29 +46,61 @@ export default function ClaimUsernameForm() {
     }
 
     return (
-        <Box className=" max-h-full bg-neutral-500">
-            <Box className="flex items-center justify-center py-32 " >
-                <Box width={800} className="flex flex-col shadow-2xl ">
-                    <Box  className="bg-white flex flex-col items-center rounded-t-xl border-2 border-red-500">
-                        <Image src={LogoProjeto} alt="ChecolistoLogo"  ></Image>
-                    </Box>
-                    <Box className="flex flex-col justify-start items-center w-full bg-neutral-50 rounded-b-xl" >
-                        <FormControl as="form" className=" flex flex-col justify-center items-center mt-2">
-                            <FormLabel className=" mt-1 text-defaultBlue">Nome</FormLabel>
-                            <Input width={400} bg={"lightgrey"} className="rounded-sm " type='text' boxShadow='outline' rounded='md' {...register('name')} />
-
-                            <FormLabel className=" text-defaultBlue ">Email</FormLabel>
-                            <Input width={400} bg={"lightgrey"} className="rounded-sm " type='email' boxShadow='outline' rounded='md' {...register('email')} />
-
-                            <FormLabel className=" mt-1 text-defaultBlue">Senha</FormLabel>
-                            <Input width={400} bg={"lightgrey"} className="rounded-sm " type='password' boxShadow='outline' rounded='md' {...register('senha')} />
-
-                            <Button className="mt-6 mb-5" colorScheme='blue' type="submit" onClick={(e) => handleSubmit(e)}>Cadastrar</Button>
-                        </FormControl>
-                    </Box>
+        <Box className="min-h-screen flex items-center justify-center bg-neutral-500 p-4">
+            <Box className="w-full max-w-lg flex flex-col shadow-2xl bg-white rounded-xl overflow-hidden">
+                <Box className="flex flex-col items-center p-4 border-b-2 border-500">
+                    <Image src={LogoProjeto} alt="ChecolistoLogo" />
                 </Box>
-            </Box>
-        </Box>
+                <Box className="flex flex-col justify-start items-center w-full bg-neutral-50 p-4">
+                    <form
+            className="flex flex-col justify-center items-center w-full"
+            onSubmit={handleSubmit}
+          >
+            <FormControl>
+              <FormLabel className="mt-1 text-defaultBlue">Nome</FormLabel>
+              <Input
+                width="100%"
+                bg="lightgrey"
+                className="rounded-sm mb-2"
+                type="text"
+                boxShadow="outline"
+                rounded="md"
+                {...register("name")}
+              />
 
+              <FormLabel className="text-defaultBlue">Email</FormLabel>
+              <Input
+                width="100%"
+                bg="lightgrey"
+                className="rounded-sm mb-2"
+                type="email"
+                boxShadow="outline"
+                rounded="md"
+                {...register("email")}
+              />
+
+              <FormLabel className="mt-1 text-defaultBlue">Senha</FormLabel>
+              <Input
+                width="100%"
+                bg="lightgrey"
+                className="rounded-sm mb-4"
+                type="password"
+                boxShadow="outline"
+                rounded="md"
+                {...register("senha")}
+              />
+
+              <Button
+                className="mt-6 mb-5 w-full"
+                colorScheme="blue"
+                type="submit"
+              >
+                Cadastrar
+              </Button>
+            </FormControl>
+          </form>
+        </Box>
+      </Box>
+    </Box>
     )
 }
